@@ -19,7 +19,7 @@ import android.widget.ImageView.ScaleType;
 public class CarouselView extends RelativeLayout {
 
 	int width;// 屏幕的宽度（像素）
-	int height;// 屏幕高度（像素）
+	int height;// 屏幕高度（像素） 、。
 	
 	// 三张轮播图片
 	private ImageView iv_cv_left;
