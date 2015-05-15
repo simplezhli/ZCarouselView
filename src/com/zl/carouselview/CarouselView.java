@@ -18,10 +18,10 @@ import android.widget.ImageView.ScaleType;
 
 public class CarouselView extends RelativeLayout {
 
-	int width;// ÆÁÄ»µÄ¿í¶È£¨ÏñËØ£©
-	int height;// ÆÁÄ»¸ß¶È£¨ÏñËØ£© ¡¢¡£
+	int width;// å±å¹•çš„å®½åº¦ï¼ˆåƒç´ ï¼‰
+	int height;// å±å¹•é«˜åº¦ï¼ˆåƒç´ ï¼‰ ã€ã€‚
 	
-	// ÈıÕÅÂÖ²¥Í¼Æ¬
+	// ä¸‰å¼ è½®æ’­å›¾ç‰‡
 	private ImageView iv_cv_left;
 	private ImageView iv_cv_middle;
 	private ImageView iv_cv_right;
@@ -32,50 +32,50 @@ public class CarouselView extends RelativeLayout {
 
 	private Context context;
 
-	int flag = 1;// ¿ØÖÆÂÖ²¥Ë³Ğò²ÎÊı
+	int flag = 1;// æ§åˆ¶è½®æ’­é¡ºåºå‚æ•°
 
-	private ImageOnClickListener imageOnClickListener; // ÂÖ²¥Í¼µã»÷¼àÌı
+	private ImageOnClickListener imageOnClickListener; // è½®æ’­å›¾ç‚¹å‡»ç›‘å¬
 
-	int rightX = 0; // 3ºÅÂÖ²¥Í¼×îĞÂÖµ
-	int rightXs = 0;// 3ºÅÂÖ²¥Í¼ÉÏÒ»±£ÁôÖµ
-	int middleX = 0;// 2ºÅÂÖ²¥Í¼×îĞÂÖµ
-	int middleXs = 0;// 2ºÅÂÖ²¥Í¼ÉÏÒ»±£ÁôÖµ
+	int rightX = 0; // 3å·è½®æ’­å›¾æœ€æ–°å€¼
+	int rightXs = 0;// 3å·è½®æ’­å›¾ä¸Šä¸€ä¿ç•™å€¼
+	int middleX = 0;// 2å·è½®æ’­å›¾æœ€æ–°å€¼
+	int middleXs = 0;// 2å·è½®æ’­å›¾ä¸Šä¸€ä¿ç•™å€¼
 
 	private Status status;
 
-	public enum Status {// Ã¶¾Ù³öÂÖ²¥Í¼right×´Ì¬£¬ÓÃÓÚÅĞ¶ÏÖĞ¼äÂÖ²¥Í¼µÄ²Ù×÷
+	public enum Status {// æšä¸¾å‡ºè½®æ’­å›¾rightçŠ¶æ€ï¼Œç”¨äºåˆ¤æ–­ä¸­é—´è½®æ’­å›¾çš„æ“ä½œ
 		Open, Close;
 	}
 
-	public boolean isOpen() {// ÂÖ²¥Í¼rightÊÇ·ñ´ò¿ª
+	public boolean isOpen() {// è½®æ’­å›¾rightæ˜¯å¦æ‰“å¼€
 		return status == Status.Open;
 	}
 
-	private Handler mHandler = new Handler() {
+	@SuppressLint("HandlerLeak") private Handler mHandler = new Handler() {
 		@SuppressLint({ "ResourceAsColor", "NewApi" })
 		@Override
 		public void handleMessage(android.os.Message msg) {
-			if (flag % 4 == 1) {//ÂÖ²¥Í¼rightÏòÓÒÒÆ¶¯£¨¹Ø±Õ£©
+			if (flag % 4 == 1) {//è½®æ’­å›¾rightå‘å³ç§»åŠ¨ï¼ˆå…³é—­ï¼‰
 				ObjectAnimator
 						.ofFloat(iv_cv_right, "translationX", 0, width / 10 * 7)
 						.setDuration(1000).start();
 				status = Status.Close;
 
 			}
-			if (flag % 4 == 2) {//ÂÖ²¥Í¼middleÏòÓÒÒÆ¶¯£¨¹Ø±Õ£©
+			if (flag % 4 == 2) {//è½®æ’­å›¾middleå‘å³ç§»åŠ¨ï¼ˆå…³é—­ï¼‰
 				ObjectAnimator
 						.ofFloat(iv_cv_middle, "translationX", 0,
 								width / 10 * 7).setDuration(1000).start();
 
 				status = Status.Close;
 			}
-			if (flag % 4 == 3) {//ÂÖ²¥Í¼middleÏò×óÒÆ¶¯£¨»¹Ô­£©
+			if (flag % 4 == 3) {//è½®æ’­å›¾middleå‘å·¦ç§»åŠ¨ï¼ˆè¿˜åŸï¼‰
 				ObjectAnimator
 						.ofFloat(iv_cv_middle, "translationX", width / 10 * 7,
 								0).setDuration(1000).start();
 				status = Status.Close;
 			}
-			if (flag % 4 == 0) {//ÂÖ²¥Í¼rightÏò×óÒÆ¶¯£¨»¹Ô­£©
+			if (flag % 4 == 0) {//è½®æ’­å›¾rightå‘å·¦ç§»åŠ¨ï¼ˆè¿˜åŸï¼‰
 				ObjectAnimator
 						.ofFloat(iv_cv_right, "translationX", width / 10 * 7, 0)
 						.setDuration(1000).start();
@@ -93,7 +93,7 @@ public class CarouselView extends RelativeLayout {
 
 		TypedArray ta = context.obtainStyledAttributes(attrs,
 				R.styleable.CarouselView);
-		// ÈÃ×Ô¶¨Òå¿Ø¼şÀïµÄÊôĞÔºÍattrsÎÄ¼şÖĞµÄÊôĞÔ¹ØÁªÆğÀ´£¬ÕâÑù¾Í¿ÉÒÔÔÚxmlÎÄ¼şÖĞÖ±½ÓÉèÖÃ¸Ã¿Ø¼şµÄÊôĞÔÁË
+		// è®©è‡ªå®šä¹‰æ§ä»¶é‡Œçš„å±æ€§å’Œattrsæ–‡ä»¶ä¸­çš„å±æ€§å…³è”èµ·æ¥ï¼Œè¿™æ ·å°±å¯ä»¥åœ¨xmlæ–‡ä»¶ä¸­ç›´æ¥è®¾ç½®è¯¥æ§ä»¶çš„å±æ€§äº†
 
 		this.image_left = ta.getDrawable(R.styleable.CarouselView_image_left);
 		this.image_middle = ta
@@ -105,9 +105,9 @@ public class CarouselView extends RelativeLayout {
 	}
 
 	/**
-	 * ³õÊ¼»¯·½·¨
+	 * åˆå§‹åŒ–æ–¹æ³•
 	 */
-	private void initView(Context context) {
+	@SuppressLint("ClickableViewAccessibility") private void initView(Context context) {
 		this.context = context;
 
 		iv_cv_left = new ImageView(context);
@@ -124,10 +124,10 @@ public class CarouselView extends RelativeLayout {
 		iv_cv_left.setImageDrawable(image_left);
 		iv_cv_middle.setImageDrawable(image_middle);
 		iv_cv_right.setImageDrawable(image_right);
-		status = Status.Open;//³õÊ¼´ò¿ª×´Ì¬
-		mHandler.sendEmptyMessageDelayed(1, 1000);//¿ªÊ¼×Ô¶¯ÂÖ²¥
+		status = Status.Open;//åˆå§‹æ‰“å¼€çŠ¶æ€
+		mHandler.sendEmptyMessageDelayed(1, 1000);//å¼€å§‹è‡ªåŠ¨è½®æ’­
 
-		// µã»÷ÊÂ¼ş¼àÌı
+		// ç‚¹å‡»äº‹ä»¶ç›‘å¬
 		iv_cv_left.setOnClickListener(new OnClickListener() {
 
 			@SuppressLint("NewApi")
@@ -218,7 +218,7 @@ public class CarouselView extends RelativeLayout {
 		});
 		iv_cv_right.setOnTouchListener(new OnTouchListener() {
 
-			@SuppressLint("NewApi")
+			@SuppressLint({ "NewApi", "ClickableViewAccessibility" })
 			@Override
 			public boolean onTouch(View v, MotionEvent ev) {
 				if (!isTestCompete) {
@@ -420,7 +420,7 @@ public class CarouselView extends RelativeLayout {
 	}
 
 	/**
-	 * ²âÁ¿×Óview
+	 * æµ‹é‡å­view
 	 */
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
@@ -435,7 +435,7 @@ public class CarouselView extends RelativeLayout {
 	}
 
 	/**
-	 * ²¼¾Ö
+	 * å¸ƒå±€
 	 */
 	@Override
 	protected void onLayout(boolean changed, int l, int t, int r, int b) {
@@ -451,7 +451,7 @@ public class CarouselView extends RelativeLayout {
 	private boolean isleftrightEvent;
 
 	private Point point = new Point();
-	private static final int TEST_DIS = 20;// ÒÆ¶¯¾«¶È
+	private static final int TEST_DIS = 20;// ç§»åŠ¨ç²¾åº¦
 
 	@SuppressLint("NewApi")
 	private void getEventType(MotionEvent ev) {
@@ -465,12 +465,12 @@ public class CarouselView extends RelativeLayout {
 		case MotionEvent.ACTION_MOVE:
 			int dX = Math.abs((int) ev.getX() - point.x);
 			int dY = Math.abs((int) ev.getY() - point.y);
-			if (dX >= TEST_DIS && dX > dY) { // ×óÓÒ»¬¶¯
+			if (dX >= TEST_DIS && dX > dY) { // å·¦å³æ»‘åŠ¨
 				isleftrightEvent = true;
 				isTestCompete = true;
 				point.x = (int) ev.getX();
 				point.y = (int) ev.getY();
-			} else if (dY >= TEST_DIS && dY > dX) { // ÉÏÏÂ»¬¶¯
+			} else if (dY >= TEST_DIS && dY > dX) { // ä¸Šä¸‹æ»‘åŠ¨
 				isleftrightEvent = false;
 				isTestCompete = true;
 				point.x = (int) ev.getX();
@@ -485,12 +485,15 @@ public class CarouselView extends RelativeLayout {
 			break;
 		}
 	}
+	
+	
+	
 	/**
-	 * Ò»Ğ©±©Â¶·½·¨£¬¿É¸ù¾İĞèÇó×ÔĞĞÌí¼Ó
+	 * ä¸€äº›æš´éœ²æ–¹æ³•ï¼Œå¯æ ¹æ®éœ€æ±‚è‡ªè¡Œæ·»åŠ 
 	 */
 	public void setImageDrawable_left(int i) {
 
-		// ¼ÓÔØÍ¼Æ¬
+		// åŠ è½½å›¾ç‰‡
 		Picasso.with(context).load(i).into(iv_cv_left);
 
 	}
@@ -509,7 +512,7 @@ public class CarouselView extends RelativeLayout {
 
 	public void setImageURL_left(String url, int holder, int error) {
 
-		// ¼ÓÔØÍ¼Æ¬
+		// åŠ è½½å›¾ç‰‡
 		Picasso.with(context).load(url).placeholder(holder).error(error)
 				.into(iv_cv_left);
 
@@ -530,7 +533,7 @@ public class CarouselView extends RelativeLayout {
 	}
 
 	/**
-	 * ÉèÖÃµã»÷ÊÂ¼ş¼àÌı
+	 * è®¾ç½®ç‚¹å‡»äº‹ä»¶ç›‘å¬
 	 * 
 	 */
 	public void setOnImageClickListener(
