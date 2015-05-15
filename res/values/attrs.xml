@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <declare-styleable name="CarouselView">
+        <attr name="image_left" format="string" />
+        <attr name="image_middle" format="string" />
+        <attr name="image_right" format="string" />
+    </declare-styleable>
+
+</resources>
