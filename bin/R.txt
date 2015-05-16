@@ -1,0 +1,7 @@
+int attr image_left 0x7f010000
+int attr image_middle 0x7f010001
+int attr image_right 0x7f010002
+int[] styleable CarouselView { 0x7f010000, 0x7f010001, 0x7f010002 }
+int styleable CarouselView_image_left 0
+int styleable CarouselView_image_middle 1
+int styleable CarouselView_image_right 2
