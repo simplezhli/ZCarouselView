@@ -15,7 +15,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.ImageView.ScaleType;
-
+ 
 public class CarouselView extends RelativeLayout {
 
 	int width;// 屏幕的宽度（像素）
