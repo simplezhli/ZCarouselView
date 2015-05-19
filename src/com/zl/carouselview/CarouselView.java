@@ -246,6 +246,7 @@ public class CarouselView extends RelativeLayout {
 					flag = 1;
 					mHandler.sendEmptyMessageDelayed(1, 4000);
 				}
+				isClickri = true;
 			}
 		});
 		iv_cv_right.setOnTouchListener(new OnTouchListener() {
