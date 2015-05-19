@@ -1,9 +1,12 @@
 # ZCarouselView
 
-
+现在还是有一些bug，比如滑动时有闪动现象。希望有牛帮忙解决问题！
 
 使用方法：
+
+
 1.代码中进行初始化
+
 CarouselView carouselView=(CarouselView) findViewById(R.id.cv);
 //		carouselView.setImageDrawable_one(R.drawable.aa);
 //		carouselView.setImageDrawable_two(R.drawable.bb);
