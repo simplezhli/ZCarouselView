@@ -42,15 +42,22 @@ public class CarouselView extends RelativeLayout {
 	int middleXs = 0;// 2号轮播图上一保留值
 
 	private Status status;
-
+	
+	private StatusMiddle statusmiddle;
+	
 	public enum Status {// 枚举出轮播图right状态，用于判断中间轮播图的操作
 		Open, Close;
 	}
-
+	public enum StatusMiddle {// 枚举出轮播图middle状态，用于判断中间轮播图的操作
+		Open, Close;
+	}
 	public boolean isOpen() {// 轮播图right是否打开
 		return status == Status.Open;
 	}
-
+	public boolean isOpenMiddle() {// 轮播图right是否打开
+		return statusmiddle == StatusMiddle.Open;
+	}
+	
 	@SuppressLint("HandlerLeak") private Handler mHandler = new Handler() {
 		@SuppressLint({ "ResourceAsColor", "NewApi" })
 		@Override
@@ -60,13 +67,13 @@ public class CarouselView extends RelativeLayout {
 						.ofFloat(iv_cv_right, "translationX", 0, width / 10 * 7)
 						.setDuration(1000).start();
 				status = Status.Close;
-
+				statusmiddle=StatusMiddle.Open;
 			}
 			if (flag % 4 == 2) {//轮播图middle向右移动（关闭）
 				ObjectAnimator
 						.ofFloat(iv_cv_middle, "translationX", 0,
 								width / 10 * 7).setDuration(1000).start();
-
+				statusmiddle=StatusMiddle.Close;
 				status = Status.Close;
 			}
 			if (flag % 4 == 3) {//轮播图middle向左移动（还原）
@@ -74,13 +81,14 @@ public class CarouselView extends RelativeLayout {
 						.ofFloat(iv_cv_middle, "translationX", width / 10 * 7,
 								0).setDuration(1000).start();
 				status = Status.Close;
+				statusmiddle=StatusMiddle.Open;
 			}
 			if (flag % 4 == 0) {//轮播图right向左移动（还原）
 				ObjectAnimator
 						.ofFloat(iv_cv_right, "translationX", width / 10 * 7, 0)
 						.setDuration(1000).start();
 				status = Status.Open;
-
+				statusmiddle=StatusMiddle.Open;
 			}
 			flag++;
 			mHandler.sendEmptyMessageDelayed(1, 4000);
@@ -138,6 +146,7 @@ public class CarouselView extends RelativeLayout {
 					ObjectAnimator
 							.ofFloat(iv_cv_middle, "translationX", 0,
 									width / 10 * 7).setDuration(1000).start();
+					statusmiddle=StatusMiddle.Close;
 					if (iv_cv_right.getX() < width / 10 * 3) {
 						ObjectAnimator
 								.ofFloat(iv_cv_right, "translationX", 0,
@@ -178,6 +187,7 @@ public class CarouselView extends RelativeLayout {
 								.ofFloat(iv_cv_middle, "translationX",
 										width / 10 * 7, 0).setDuration(1000)
 								.start();
+						statusmiddle=StatusMiddle.Open;
 					}
 				}
 				flag = 2;
@@ -208,6 +218,7 @@ public class CarouselView extends RelativeLayout {
 								.ofFloat(iv_cv_middle, "translationX",
 										width / 10 * 7, 0).setDuration(1000)
 								.start();
+						statusmiddle=StatusMiddle.Open;
 					}
 
 				}
@@ -221,11 +232,13 @@ public class CarouselView extends RelativeLayout {
 			@SuppressLint({ "NewApi", "ClickableViewAccessibility" })
 			@Override
 			public boolean onTouch(View v, MotionEvent ev) {
+				if(!isOpenMiddle()){
+					return false;
+				}
 				if (!isTestCompete) {
 					getEventType(ev);
 					return false;
 				}
-
 				if (isleftrightEvent) {
 
 					switch (ev.getAction()) {
@@ -253,7 +266,8 @@ public class CarouselView extends RelativeLayout {
 							ViewHelper.setTranslationX(iv_cv_right, rightX);
 
 						}
-
+						postInvalidate();  
+						invalidate();
 						break;
 
 					case MotionEvent.ACTION_UP:
@@ -357,7 +371,8 @@ public class CarouselView extends RelativeLayout {
 							ViewHelper.setTranslationX(iv_cv_middle, middleX);
 
 						}
-
+						postInvalidate();  
+						invalidate();
 						break;
 
 					case MotionEvent.ACTION_UP:
@@ -369,6 +384,7 @@ public class CarouselView extends RelativeLayout {
 										.ofFloat(iv_cv_middle, "translationX",
 												middleX, width / 10 * 7)
 										.setDuration(400).start();
+								statusmiddle=StatusMiddle.Close;
 								flag = 3;
 								mHandler.sendEmptyMessageDelayed(1, 4000);
 							} else {
@@ -377,6 +393,7 @@ public class CarouselView extends RelativeLayout {
 												middleX, 0).setDuration(400)
 										.start();
 								flag = 2;
+								statusmiddle=StatusMiddle.Open;
 								mHandler.sendEmptyMessageDelayed(1, 4000);
 							}
 
@@ -386,6 +403,7 @@ public class CarouselView extends RelativeLayout {
 										.ofFloat(iv_cv_middle, "translationX",
 												middleX, width / 10 * 7)
 										.setDuration(400).start();
+								statusmiddle=StatusMiddle.Close;
 								flag = 2;
 								mHandler.sendEmptyMessageDelayed(1, 4000);
 							} else {
@@ -394,6 +412,7 @@ public class CarouselView extends RelativeLayout {
 												middleX, 0).setDuration(400)
 										.start();
 								flag = 3;
+								statusmiddle=StatusMiddle.Open;
 								mHandler.sendEmptyMessageDelayed(1, 4000);
 							}
 
