@@ -3,6 +3,7 @@ package com.zl.carouselview;
 import com.nineoldandroids.animation.ObjectAnimator;
 import com.nineoldandroids.view.ViewHelper;
 import com.squareup.picasso.Picasso;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -10,17 +11,24 @@ import android.graphics.Point;
 import android.graphics.drawable.Drawable;
 import android.os.Handler;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.ImageView.ScaleType;
- 
+
+/**
+ * @date 2015年5月19日11:27:49
+ * @author zhli
+ * @Description: 轮播图自定义布局
+ */
+
 public class CarouselView extends RelativeLayout {
 
 	int width;// 屏幕的宽度（像素）
 	int height;// 屏幕高度（像素） 、。
-	
+
 	// 三张轮播图片
 	private ImageView iv_cv_left;
 	private ImageView iv_cv_middle;
@@ -36,63 +44,71 @@ public class CarouselView extends RelativeLayout {
 
 	private ImageOnClickListener imageOnClickListener; // 轮播图点击监听
 
+	private boolean isClickmid = true;// 是否可以点击middle，解决onclick与ontouch冲突
+
+	private boolean isClickri = true;
+
 	int rightX = 0; // 3号轮播图最新值
-	int rightXs = 0;// 3号轮播图上一保留值
+
 	int middleX = 0;// 2号轮播图最新值
-	int middleXs = 0;// 2号轮播图上一保留值
 
 	private Status status;
-	
+
 	private StatusMiddle statusmiddle;
-	
+
 	public enum Status {// 枚举出轮播图right状态，用于判断中间轮播图的操作
 		Open, Close;
 	}
+
 	public enum StatusMiddle {// 枚举出轮播图middle状态，用于判断中间轮播图的操作
 		Open, Close;
 	}
+
 	public boolean isOpen() {// 轮播图right是否打开
 		return status == Status.Open;
 	}
+
 	public boolean isOpenMiddle() {// 轮播图right是否打开
 		return statusmiddle == StatusMiddle.Open;
 	}
-	
-	@SuppressLint("HandlerLeak") private Handler mHandler = new Handler() {
+
+	@SuppressLint("HandlerLeak")
+	private Handler mHandler = new Handler() {
 		@SuppressLint({ "ResourceAsColor", "NewApi" })
 		@Override
 		public void handleMessage(android.os.Message msg) {
-			if (flag % 4 == 1) {//轮播图right向右移动（关闭）
+			if (flag % 4 == 1) {// 轮播图right向右移动（关闭）
 				ObjectAnimator
 						.ofFloat(iv_cv_right, "translationX", 0, width / 10 * 7)
 						.setDuration(1000).start();
 				status = Status.Close;
-				statusmiddle=StatusMiddle.Open;
+				statusmiddle = StatusMiddle.Open;
 			}
-			if (flag % 4 == 2) {//轮播图middle向右移动（关闭）
+			if (flag % 4 == 2) {// 轮播图middle向右移动（关闭）
 				ObjectAnimator
 						.ofFloat(iv_cv_middle, "translationX", 0,
 								width / 10 * 7).setDuration(1000).start();
-				statusmiddle=StatusMiddle.Close;
+				statusmiddle = StatusMiddle.Close;
 				status = Status.Close;
 			}
-			if (flag % 4 == 3) {//轮播图middle向左移动（还原）
+			if (flag % 4 == 3) {// 轮播图middle向左移动（还原）
 				ObjectAnimator
 						.ofFloat(iv_cv_middle, "translationX", width / 10 * 7,
 								0).setDuration(1000).start();
 				status = Status.Close;
-				statusmiddle=StatusMiddle.Open;
+				statusmiddle = StatusMiddle.Open;
 			}
-			if (flag % 4 == 0) {//轮播图right向左移动（还原）
+			if (flag % 4 == 0) {// 轮播图right向左移动（还原）
 				ObjectAnimator
 						.ofFloat(iv_cv_right, "translationX", width / 10 * 7, 0)
 						.setDuration(1000).start();
 				status = Status.Open;
-				statusmiddle=StatusMiddle.Open;
+				statusmiddle = StatusMiddle.Open;
 			}
 			flag++;
+			iv_cv_middle.postInvalidate();
+			iv_cv_right.postInvalidate();
 			mHandler.sendEmptyMessageDelayed(1, 4000);
-
 		};
 	};
 
@@ -115,7 +131,8 @@ public class CarouselView extends RelativeLayout {
 	/**
 	 * 初始化方法
 	 */
-	@SuppressLint("ClickableViewAccessibility") private void initView(Context context) {
+	@SuppressLint("ClickableViewAccessibility")
+	private void initView(Context context) {
 		this.context = context;
 
 		iv_cv_left = new ImageView(context);
@@ -132,8 +149,8 @@ public class CarouselView extends RelativeLayout {
 		iv_cv_left.setImageDrawable(image_left);
 		iv_cv_middle.setImageDrawable(image_middle);
 		iv_cv_right.setImageDrawable(image_right);
-		status = Status.Open;//初始打开状态
-		mHandler.sendEmptyMessageDelayed(1, 1000);//开始自动轮播
+		status = Status.Open;// 初始打开状态
+		mHandler.sendEmptyMessageDelayed(1, 1000);// 开始自动轮播
 
 		// 点击事件监听
 		iv_cv_left.setOnClickListener(new OnClickListener() {
@@ -142,11 +159,12 @@ public class CarouselView extends RelativeLayout {
 			@Override
 			public void onClick(View v) {
 				mHandler.removeMessages(1);
+
 				if (iv_cv_middle.getX() < width / 10 * 3) {
 					ObjectAnimator
 							.ofFloat(iv_cv_middle, "translationX", 0,
 									width / 10 * 7).setDuration(1000).start();
-					statusmiddle=StatusMiddle.Close;
+					statusmiddle = StatusMiddle.Close;
 					if (iv_cv_right.getX() < width / 10 * 3) {
 						ObjectAnimator
 								.ofFloat(iv_cv_right, "translationX", 0,
@@ -169,30 +187,32 @@ public class CarouselView extends RelativeLayout {
 			@SuppressLint("NewApi")
 			@Override
 			public void onClick(View v) {
-				mHandler.removeMessages(1);
-				if (iv_cv_right.getX() > width / 10 * 3
-						&& iv_cv_middle.getX() < width / 10 * 3) {
-					imageOnClickListener.image_middle_Click();
+				if (isClickmid) {
+					mHandler.removeMessages(1);
+					if (iv_cv_right.getX() > width / 10 * 3
+							&& iv_cv_middle.getX() < width / 10 * 3) {
+						imageOnClickListener.image_middle_Click();
 
-				} else {
-					if (iv_cv_middle.getX() < width / 10 * 3) {
-
-						ObjectAnimator
-								.ofFloat(iv_cv_right, "translationX", 0,
-										width / 10 * 7).setDuration(1000)
-								.start();
-						status = Status.Close;
 					} else {
-						ObjectAnimator
-								.ofFloat(iv_cv_middle, "translationX",
-										width / 10 * 7, 0).setDuration(1000)
-								.start();
-						statusmiddle=StatusMiddle.Open;
-					}
-				}
-				flag = 2;
-				mHandler.sendEmptyMessageDelayed(1, 4000);
+						if (iv_cv_middle.getX() < width / 10 * 3) {
 
+							ObjectAnimator
+									.ofFloat(iv_cv_right, "translationX", 0,
+											width / 10 * 7).setDuration(1000)
+									.start();
+							status = Status.Close;
+						} else {
+							ObjectAnimator
+									.ofFloat(iv_cv_middle, "translationX",
+											width / 10 * 7, 0)
+									.setDuration(1000).start();
+							statusmiddle = StatusMiddle.Open;
+						}
+					}
+					flag = 2;
+					mHandler.sendEmptyMessageDelayed(1, 4000);
+				}
+				isClickmid = true;
 			}
 		});
 
@@ -201,30 +221,31 @@ public class CarouselView extends RelativeLayout {
 			@SuppressLint("NewApi")
 			@Override
 			public void onClick(View v) {
-				mHandler.removeMessages(1);
-				if (iv_cv_right.getX() < width / 10 * 3) {
-					imageOnClickListener.image_right_Click();
+				if (isClickri) {
+					mHandler.removeMessages(1);
+					if (iv_cv_right.getX() < width / 10 * 3) {
+						imageOnClickListener.image_right_Click();
 
-				} else {
-
-					ObjectAnimator
-							.ofFloat(iv_cv_right, "translationX",
-									width / 10 * 7, 0).setDuration(1000)
-							.start();
-					status = Status.Open;
-					if (iv_cv_middle.getX() > width / 10 * 3) {
+					} else {
 
 						ObjectAnimator
-								.ofFloat(iv_cv_middle, "translationX",
+								.ofFloat(iv_cv_right, "translationX",
 										width / 10 * 7, 0).setDuration(1000)
 								.start();
-						statusmiddle=StatusMiddle.Open;
+						status = Status.Open;
+						if (iv_cv_middle.getX() > width / 10 * 3) {
+
+							ObjectAnimator
+									.ofFloat(iv_cv_middle, "translationX",
+											width / 10 * 7, 0)
+									.setDuration(1000).start();
+							statusmiddle = StatusMiddle.Open;
+						}
+
 					}
-
+					flag = 1;
+					mHandler.sendEmptyMessageDelayed(1, 4000);
 				}
-				flag = 1;
-				mHandler.sendEmptyMessageDelayed(1, 4000);
-
 			}
 		});
 		iv_cv_right.setOnTouchListener(new OnTouchListener() {
@@ -232,7 +253,7 @@ public class CarouselView extends RelativeLayout {
 			@SuppressLint({ "NewApi", "ClickableViewAccessibility" })
 			@Override
 			public boolean onTouch(View v, MotionEvent ev) {
-				if(!isOpenMiddle()){
+				if (!isOpenMiddle()) {
 					return false;
 				}
 				if (!isTestCompete) {
@@ -248,9 +269,8 @@ public class CarouselView extends RelativeLayout {
 					case MotionEvent.ACTION_MOVE:
 
 						mHandler.removeMessages(1);
-						
-						rightXs = rightX;
-						rightX += (int) ev.getX() - point.x;
+
+						rightX = (int) ev.getRawX() - point.x - width / 10 * 2;
 
 						if (rightX >= 0 && rightX <= width / 10 * 7) {
 
@@ -266,53 +286,33 @@ public class CarouselView extends RelativeLayout {
 							ViewHelper.setTranslationX(iv_cv_right, rightX);
 
 						}
-						postInvalidate();  
-						invalidate();
+						iv_cv_middle.postInvalidate();
+						iv_cv_right.postInvalidate();
+
 						break;
 
 					case MotionEvent.ACTION_UP:
 					case MotionEvent.ACTION_CANCEL:
-						int j = rightX - rightXs;
-						if (j > 0) {
-							if (rightX > width / 10 * 3.5) {
-								ObjectAnimator
-										.ofFloat(iv_cv_right, "translationX",
-												rightX, width / 10 * 7)
-										.setDuration(400).start();
-								status = Status.Close;
-								flag = 2;
-								mHandler.sendEmptyMessageDelayed(1, 4000);
-							} else {
-								ObjectAnimator
-										.ofFloat(iv_cv_right, "translationX",
-												rightX, 0).setDuration(400)
-										.start();
-								status = Status.Open;
-								flag = 1;
-								mHandler.sendEmptyMessageDelayed(1, 4000);
-							}
 
-						} else if (j < 0) {
-							if (rightX > width / 10 * 3.5) {
-								ObjectAnimator
-										.ofFloat(iv_cv_right, "translationX",
-												rightX, width / 10 * 7)
-										.setDuration(400).start();
-								status = Status.Close;
-								flag = 2;
-								mHandler.sendEmptyMessageDelayed(1, 4000);
-							} else {
-								ObjectAnimator
-										.ofFloat(iv_cv_right, "translationX",
-												rightX, 0).setDuration(400)
-										.start();
-								status = Status.Open;
-								flag = 1;
-								mHandler.sendEmptyMessageDelayed(1, 4000);
-							}
-
+						if (rightX > width / 10 * 3.5) {
+							ObjectAnimator
+									.ofFloat(iv_cv_right, "translationX",
+											rightX, width / 10 * 7)
+									.setDuration(400).start();
+							status = Status.Close;
+							flag = 2;
+							mHandler.sendEmptyMessageDelayed(1, 4000);
+						} else {
+							ObjectAnimator
+									.ofFloat(iv_cv_right, "translationX",
+											rightX, 0).setDuration(400).start();
+							status = Status.Open;
+							flag = 1;
+							mHandler.sendEmptyMessageDelayed(1, 4000);
 						}
-
+						isClickri = false;
+						iv_cv_middle.postInvalidate();
+						iv_cv_right.postInvalidate();
 						isleftrightEvent = false;
 						isTestCompete = false;
 						break;
@@ -336,14 +336,14 @@ public class CarouselView extends RelativeLayout {
 			@SuppressLint("NewApi")
 			@Override
 			public boolean onTouch(View v, MotionEvent ev) {
-				if (isOpen()) {
-					return false;
-				}
+
 				if (!isTestCompete) {
 					getEventType(ev);
 					return false;
 				}
-
+				if (isOpen()) {
+					return false;
+				}
 				if (isleftrightEvent) {
 
 					switch (ev.getAction()) {
@@ -353,10 +353,8 @@ public class CarouselView extends RelativeLayout {
 					case MotionEvent.ACTION_MOVE:
 
 						mHandler.removeMessages(1);
-						
-						middleXs = middleX;
-						middleX += (int) ev.getX() - point.x;
 
+						middleX = (int) ev.getRawX() - point.x - width / 10 * 1;
 						if (middleX >= 0 && middleX <= width / 10 * 7) {
 
 							ViewHelper.setTranslationX(iv_cv_middle, middleX);
@@ -371,53 +369,34 @@ public class CarouselView extends RelativeLayout {
 							ViewHelper.setTranslationX(iv_cv_middle, middleX);
 
 						}
-						postInvalidate();  
-						invalidate();
+						iv_cv_middle.postInvalidate();
+						iv_cv_right.postInvalidate();
+
 						break;
 
 					case MotionEvent.ACTION_UP:
 					case MotionEvent.ACTION_CANCEL:
-						int z = middleX - middleXs;
-						if (z > 0) {
-							if (middleX > width / 10 * 3.5) {
-								ObjectAnimator
-										.ofFloat(iv_cv_middle, "translationX",
-												middleX, width / 10 * 7)
-										.setDuration(400).start();
-								statusmiddle=StatusMiddle.Close;
-								flag = 3;
-								mHandler.sendEmptyMessageDelayed(1, 4000);
-							} else {
-								ObjectAnimator
-										.ofFloat(iv_cv_middle, "translationX",
-												middleX, 0).setDuration(400)
-										.start();
-								flag = 2;
-								statusmiddle=StatusMiddle.Open;
-								mHandler.sendEmptyMessageDelayed(1, 4000);
-							}
 
-						} else if (z < 0) {
-							if (middleX > width / 10 * 3.5) {
-								ObjectAnimator
-										.ofFloat(iv_cv_middle, "translationX",
-												middleX, width / 10 * 7)
-										.setDuration(400).start();
-								statusmiddle=StatusMiddle.Close;
-								flag = 2;
-								mHandler.sendEmptyMessageDelayed(1, 4000);
-							} else {
-								ObjectAnimator
-										.ofFloat(iv_cv_middle, "translationX",
-												middleX, 0).setDuration(400)
-										.start();
-								flag = 3;
-								statusmiddle=StatusMiddle.Open;
-								mHandler.sendEmptyMessageDelayed(1, 4000);
-							}
-
+						if (middleX > width / 10 * 3.5) {
+							ObjectAnimator
+									.ofFloat(iv_cv_middle, "translationX",
+											middleX, width / 10 * 7)
+									.setDuration(400).start();
+							statusmiddle = StatusMiddle.Close;
+							flag = 3;
+							mHandler.sendEmptyMessageDelayed(1, 4000);
+						} else {
+							ObjectAnimator
+									.ofFloat(iv_cv_middle, "translationX",
+											middleX, 0).setDuration(400)
+									.start();
+							flag = 2;
+							statusmiddle = StatusMiddle.Open;
+							mHandler.sendEmptyMessageDelayed(1, 4000);
 						}
-
+						isClickmid = false;
+						iv_cv_middle.postInvalidate();
+						iv_cv_right.postInvalidate();
 						isleftrightEvent = false;
 						isTestCompete = false;
 						break;
@@ -504,9 +483,7 @@ public class CarouselView extends RelativeLayout {
 			break;
 		}
 	}
-	
-	
-	
+
 	/**
 	 * 一些暴露方法，可根据需求自行添加
 	 */
