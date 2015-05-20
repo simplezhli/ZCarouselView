@@ -1,5 +1,10 @@
 # ZCarouselView
 
+这是一个自定义布局的轮播图。
+
+效果图：
+
+![Alt Text](https://raw.githubusercontent.com/simplezhli/ZCarouselView/master/image/test.gif)
 
 
 使用方法：
